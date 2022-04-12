@@ -13,5 +13,10 @@ public class AltGridEditor: Editor
         {
             altGrid.AutoCreateGrid();
         }
+
+        if(GUILayout.Button("Clear HexaGrid"))
+        {
+            altGrid.ClearGrid();
+        }
     }
 }

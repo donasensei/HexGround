@@ -1,10 +1,11 @@
+using HexaGround;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class AltGrid : MonoBehaviour
 {
-    public Transform hexPrefab;
+    public GameObject hexPrefab;
 
     public int gridWidth = 11; //그리드 가로길이
     public int gridHeight = 11; //그리드 세로길이
@@ -14,9 +15,14 @@ public class AltGrid : MonoBehaviour
     public float gap = 0.0f; // 간격
 
     public Vector3 startOffset;
+    
     [SerializeField]
     Vector3 generatePos; //시작지점 변수
- 
+
+
+    public HexaCoordinate[,] hexaCoordinates;
+    private List<GameObject> gridObjects = new List<GameObject>();
+
     void Start()
     {
         AutoCreateGrid();
@@ -67,17 +73,39 @@ public class AltGrid : MonoBehaviour
     {
         AddGap();
         CalcStartPos(startOffset); //계산된 시작지점 저장됨
+        InitHexCoordMap(gridWidth, gridHeight);
         // 그리드 생성
         for (int y = 0; y < gridHeight; y++)
         {
             for (int x = 0; x < gridWidth; x++)
             {
-                Transform hex = Instantiate(hexPrefab) as Transform;
+                GameObject hexObject = Instantiate(hexPrefab, transform);
+                Transform hex = hexObject.transform;
+                gridObjects.Add(hexObject);
                 Vector2 gridPos = new Vector2(x, y);
+                hexaCoordinates[y, x] = new HexaCoordinate(x, y);
                 hex.position = CalcWorldPos(gridPos);
-                hex.parent = this.transform;
                 hex.name = "Hexagon" + x + "|" + y;
             }
         }
+
+        Debug.Log("Hex Map Done");
+    }
+
+    public void InitHexCoordMap(int width, int height)
+    {
+        Debug.Log("Init Hex CoordMap");
+        hexaCoordinates = new HexaCoordinate[height, width];
+    }
+
+    public void ClearGrid()
+    {
+        Debug.Log("Clear Grid");
+        int totalCount = gridObjects.Count;
+        for(int index = totalCount - 1; index >= 0; --index)
+        {
+            DestroyImmediate(gridObjects[index]);
+        }
+        gridObjects.Clear();
     }
 }

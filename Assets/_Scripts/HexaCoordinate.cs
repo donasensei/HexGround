@@ -19,9 +19,26 @@ namespace HexaGround
 
     public class HexaCoordinate
     {
-        public Vector3 position;
+        public Vector3 Position
+        {
+            get => position;
+        }
+
+        Vector3 position;
         public int eulerAngle;
 
+        public HexaCoordinate()
+        { }
+
+        public HexaCoordinate(int x, int z)
+        {
+            SetPosition(x, z);
+        }
+
+        public void SetPosition(int x, int z)
+        {
+            position = new Vector3(x, -x - z, z);
+        }
         //Vector3
         //x가 좌우
         //z가 상하
