@@ -7,14 +7,6 @@ public class HexaBot : MonoBehaviour
 {
     public EHexaDirection direction = EHexaDirection.NONE;
 
-    void Start()
-    {
-        for(int number = 0; number < (int)EHexaDirection.DIRCOUNT; ++number)
-        {
-            Move((EHexaDirection)number);
-        }
-    }
-
     public void Move(EHexaDirection direction)
     {
         switch(direction)

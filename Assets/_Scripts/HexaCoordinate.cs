@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,14 +18,15 @@ namespace HexaGround
         DIRCOUNT
     }
 
+    [Serializable]
     public class HexaCoordinate
     {
-        public Vector3 Position
+        public Vector3 CoordPosition
         {
-            get => position;
+            get => coordPosition;
         }
 
-        Vector3 position;
+        Vector3 coordPosition;
         public int eulerAngle;
 
         public HexaCoordinate()
@@ -37,7 +39,7 @@ namespace HexaGround
 
         public void SetPosition(int x, int z)
         {
-            position = new Vector3(x, -x - z, z);
+            coordPosition = new Vector3(x, -x - z, z);
         }
         //Vector3
         //x°¡ ÁÂ¿ì

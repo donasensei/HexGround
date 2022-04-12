@@ -19,13 +19,17 @@ public class AltGrid : MonoBehaviour
     [SerializeField]
     Vector3 generatePos; //시작지점 변수
 
-
+    public Vector3 HexaCoordinate;
     public HexaCoordinate[,] hexaCoordinates;
+    public HexaBot hexaBot;
     private List<GameObject> gridObjects = new List<GameObject>();
+
+
 
     void Start()
     {
         AutoCreateGrid();
+        Test();
     }
  
     void AddGap()
@@ -107,5 +111,45 @@ public class AltGrid : MonoBehaviour
             DestroyImmediate(gridObjects[index]);
         }
         gridObjects.Clear();
+    }
+
+    public Transform GetGridWorldPos(int x, int z)
+    {
+        int index = z * gridWidth + x;
+        Debug.Log(gridObjects[index].name);
+        return gridObjects[index].transform;
+    }
+
+    public void Test()
+    {
+        Queue<Vector2> root = new Queue<Vector2>();
+        root.Enqueue(new Vector2(0, 0));
+        root.Enqueue(new Vector2(0, 1));
+        root.Enqueue(new Vector2(1, 1));
+        root.Enqueue(new Vector2(1, 2));
+        root.Enqueue(new Vector2(1, 3));
+        root.Enqueue(new Vector2(1, 4));
+        root.Enqueue(new Vector2(2, 4));
+        root.Enqueue(new Vector2(3, 4));
+        root.Enqueue(new Vector2(4, 4));
+        StartCoroutine(TestHexaBotMove(root));
+    }
+
+    public IEnumerator TestHexaBotMove(Queue<Vector2> moveRoot)
+    {
+        if (moveRoot.Count > 0)
+        {
+            var startPoint = moveRoot.Dequeue();
+            Debug.Log("HexaBot position Init");
+            hexaBot.transform.position = GetGridWorldPos((int)startPoint.x, (int)startPoint.y).position;
+            yield return new WaitForSeconds(1.0f);
+        }
+            
+        while(moveRoot.Count > 0)
+        {
+            var nextPoint = moveRoot.Dequeue();
+            hexaBot.transform.position = GetGridWorldPos((int)nextPoint.x, (int)nextPoint.y).position;
+            yield return new WaitForSeconds(1.0f);
+        }
     }
 }
