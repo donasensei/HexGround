@@ -1,6 +1,7 @@
 using HexaGround;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class AltGrid : MonoBehaviour
@@ -28,6 +29,7 @@ public class AltGrid : MonoBehaviour
 
     void Start()
     {
+        DOTween.Init(false, true, LogBehaviour.Default);
         AutoCreateGrid();
         Test();
     }
@@ -137,19 +139,27 @@ public class AltGrid : MonoBehaviour
 
     public IEnumerator TestHexaBotMove(Queue<Vector2> moveRoot)
     {
-        if (moveRoot.Count > 0)
+        Debug.Log("HexaBot position Init");
+        Vector3 nextPoint = moveRoot.Dequeue();
+        hexaBot.transform.position = GetGridWorldPos((int)nextPoint.x, (int)nextPoint.y).position + Vector3.up;
+        while (moveRoot.Count > 0)
         {
-            var startPoint = moveRoot.Dequeue();
-            Debug.Log("HexaBot position Init");
-            hexaBot.transform.position = GetGridWorldPos((int)startPoint.x, (int)startPoint.y).position;
-            yield return new WaitForSeconds(1.0f);
-        }
-            
-        while(moveRoot.Count > 0)
-        {
-            var nextPoint = moveRoot.Dequeue();
-            hexaBot.transform.position = GetGridWorldPos((int)nextPoint.x, (int)nextPoint.y).position;
-            yield return new WaitForSeconds(1.0f);
+            Debug.Log("Go to Next Position");
+            nextPoint = moveRoot.Dequeue();
+            Sequence moveSequence = DOTween.Sequence().SetAutoKill(false);
+            Vector3 targetPos = GetGridWorldPos((int)nextPoint.x, (int)nextPoint.y).position;
+            //moveSequence.Append(hexaBot.transform.DODynamicLookAt(targetPos, 1f, AxisConstraint.Y, Vector3.up).SetAutoKill(false))
+            //    .Append(hexaBot.transform.DOMove(targetPos, 1f).SetAutoKill(false));
+            moveSequence
+            .Append(hexaBot.transform.DOLookAt(targetPos, 1f, AxisConstraint.Y, Vector3.up).SetAutoKill(false))
+            .Append(hexaBot.transform.DOMove(targetPos, 1f).SetAutoKill(false));
+            Debug.Log($"Sequence Duration {moveSequence.Duration()}");
+            yield return new WaitForSeconds(moveSequence.Duration());
+            while (!moveSequence.IsComplete())
+            {
+                Debug.Log("Wait little bit");
+                yield return null;
+            }
         }
     }
 }
